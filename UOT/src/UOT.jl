@@ -40,7 +40,7 @@ function compute_flat_metric(x::Array{Array{Float64,1},1}, y::Array{Array{Float6
     n, m = length(x), length(y);
     out = init_UOT_output(n, m);
     c = cat(a, -b, dims = 1);
-    s = n*m;
+    p = n*m;
 
     # model = Model(with_optimizer(GLPK.Optimizer));
     model = Model(with_optimizer(Mosek.Optimizer, MSK_IPAR_LOG = 0)); # MSK_IPAR_NUM_THREADS number of threads https://www.gams.com/latest/docs/S_MOSEK.html
@@ -60,45 +60,31 @@ function compute_flat_metric(x::Array{Array{Float64,1},1}, y::Array{Array{Float6
     @objective(model, Max, c'*f);
     JuMP.optimize!(model);
     out.cost = JuMP.objective_value(model);
-
     # println(termination_status(model))
     # println(JuMP.solve_time(model))
 
+    # compute coupling and cost matrices from primal and dual solutions
     if coupling_mass_variation
-        dual = zeros(s);
-        for i in 1:s
+        dual = zeros(p);
+        for i in 1:p
             dual[i] = -JuMP.dual.(constraint_by_name(model, "lip_constraints_$(i)"));
         end
         out.mass_variation = -JuMP.dual.(bound_constraints);
         f_opt_value = JuMP.value.(f);
-        out.P, out.C = compute_coupling_mass_variation(f_opt_value, dual, n, m);
-    end
-    return out;
-end
 
-"""
-    compute_coupling_mass_variation(f, dual, n, m)
-Compute the matrix of couplings and the matrix of cost from the primal variable `f` and the dual variable `dual`
-"""
-function compute_coupling_mass_variation(f::Array{Float64,1}, dual::Array{Float64,1}, n::Int64, m::Int64)
-    # matrix of couplings
-    P = zeros(n, m);
-    # matrix of costs
-    C = zeros(n, m);
-
-    k = 1;
-    for i in 1:n
-        for j in 1:m
-            C[i, j] = f[i] - f[j + n];
-            # to prevent numerical approximation
-            if abs(dual[k]) > 1e-8
-                P[i, j] = dual[k];
+        k = 1;
+        for i in 1:n
+            for j in 1:m
+                out.C[i, j] = f_opt_value[i] - f_opt_value[j + n];
+                # to prevent numerical approximations
+                if abs(dual[k]) > 1e-8
+                    out.P[i, j] = dual[k];
+                end
+                k += 1;
             end
-            k += 1;
         end
     end
-
-    return P, C;
+    return out;
 end
 
 end # module
