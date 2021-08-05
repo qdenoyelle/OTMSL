@@ -9,7 +9,7 @@ The code is in Julia and to work properly requires:
 	<li><a href="https://julialang.org">Julia 1.0.5</a> (LTS release),</li>
 	<li>the <a href="https://github.com/jump-dev/JuMP.jl">JuMP</a> package for optimization,</li>
 	<li>the solver Mosek (and the package MosekTools). Beware that using Mosek requires a license. Alternatively, one can use the solver <a href="https://github.com/jump-dev/GLPK.jl">GLPK</a>,</li>
-	<li>optional (for notebooks and plots): package <a href="https://github.com/timholy/Revise.jl">Revise</a> and <a href="https://github.com/JuliaPy/PyPlot.jl">PyPlot</a>.</li>
+	<li>optional (for plots): package <a href="https://github.com/JuliaPy/PyPlot.jl">PyPlot</a>.</li>
 </ul>
 
 # Example
