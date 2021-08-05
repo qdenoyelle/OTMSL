@@ -2,13 +2,14 @@ module UOT
 
 using LinearAlgebra
 using JuMP
-# solver (GLPK could be considered but slower)
+# solver (library GLPK could be considered but slower)
 using Mosek, MosekTools
 
 function euclidian(x::Array{Float64,1}, y::Array{Float64,1})
     return norm(x - y);
 end
 
+# structure to store output of compute_flat_metric
 mutable struct UOT_output
     cost::Float64
     # matrix of couplings
@@ -51,10 +52,12 @@ function compute_flat_metric(x::Array{Array{Float64,1},1}, y::Array{Array{Float6
         for l in 1:m
             e = ground_metric(x[k], y[l]);
             constr = @constraint(model, -e <= f[k] - f[l + n] <= e)
+            # Lipschitz constraints of the optimization problem
             set_name(constr, "lip_constraints_$(i)")
             i += 1;
         end
     end
+    # Box constraints of the optimization problem
     @constraint(model, bound_constraints, -lambda .<= f .<= lambda);
 
     @objective(model, Max, c'*f);
@@ -76,7 +79,7 @@ function compute_flat_metric(x::Array{Array{Float64,1},1}, y::Array{Array{Float6
         for i in 1:n
             for j in 1:m
                 out.C[i, j] = f_opt_value[i] - f_opt_value[j + n];
-                # to prevent numerical approximations
+                # to prevent numerical approximations: remove?
                 if abs(dual[k]) > 1e-8
                     out.P[i, j] = dual[k];
                 end

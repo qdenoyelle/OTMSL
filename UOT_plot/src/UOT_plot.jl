@@ -27,10 +27,9 @@ function plot_points_sources(bounds::Array{Array{Float64,1},1}, x::Array{Array{F
     ax = gca();
     ax.set_xlim([bounds[1][1], bounds[2][1]]);
     ax.set_ylim([bounds[1][2], bounds[2][2]]);
-    title(L"$\mu$ and $\nu_{\varepsilon, j}$ with $ε=0.2$")
     legend()
     tight_layout()
-    savefig("figures/test.pdf", dpi = 100)
+    # savefig("figures/test.pdf", dpi = 100)
     show()
 end
 
