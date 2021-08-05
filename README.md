@@ -12,7 +12,7 @@ The code is in Julia and to work properly requires:
 	<li>optional (for notebooks and plots): package <a href="https://github.com/timholy/Revise.jl">Revise</a> and <a href="https://github.com/JuliaPy/PyPlot.jl">PyPlot</a>.</li>
 </ul>
 
-# Examples
+# Example
 
-Chec
+Check the notebook "test.ipynb"
 
