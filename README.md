@@ -14,5 +14,5 @@ The code is in Julia and to work properly requires:
 
 # Example
 
-Check the notebook "test.ipynb"
+Check the notebook "test.ipynb".
 
